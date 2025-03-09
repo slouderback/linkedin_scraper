@@ -96,8 +96,8 @@ def main():
     my_search.search(query)
 
     print(f"Fields: {my_search.fields}")
-    # print(f"Jobs: {my_search.jobs}")
-    # print(f"Posts: {my_search.posts}")
+    print(f"Jobs: {my_search.jobs}")
+    print(f"Posts: {my_search.posts}")
     print(f"People: {my_search.people}")
     # print(f"Companies: {my_search.companies}")
     # print(f"Groups: {my_search.groups}")

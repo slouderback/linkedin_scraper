@@ -214,8 +214,8 @@ class Search:
         
         # Map the sidebar field names to the corresponding scraper functions.
         scrape_function_map = {
-            # "Jobs": self.scrape_jobs_section,
-            # "Posts": self.scrape_posts_section,
+            "Jobs": self.scrape_jobs_section,
+            "Posts": self.scrape_posts_section,
             "People": self.scrape_people_section,
             # "Companies": self.scrape_companies_section,
             # "Groups": self.scrape_groups_section,
