@@ -1,0 +1,11 @@
+{
+  "page": "connections",
+  "fields": [
+    "name",
+    "headline",
+    "profile_link",
+    "photo_link",
+    "connected_date"
+  ],
+  "limit": 20
+}
