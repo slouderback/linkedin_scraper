@@ -28,6 +28,7 @@ class Post:
 @dataclass
 class Person:
     name: str = None
+    profile_url: str = None
     profile_photo_url: str = None
     headline: str = None
     location: str = None
@@ -35,6 +36,8 @@ class Person:
 @dataclass
 class Company:
     company_name: str = None
+    profile_url: str = None
+    profile_photo_url: str = None
     headline: str = None
     follower_count: int = None
     description: str = None

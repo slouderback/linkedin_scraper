@@ -95,17 +95,19 @@ def main():
     my_search = Search(driver)
     my_search.search(query)
 
-    print(f"Fields: {my_search.fields}")
-    print(f"Jobs: {my_search.jobs}")
-    print(f"Posts: {my_search.posts}")
-    print(f"People: {my_search.people}")
+    # print(f"Fields: {my_search.fields}")
+    # print(f"Jobs: {my_search.jobs}")
+    # print(f"Posts: {my_search.posts}")
+    # print(f"People: {my_search.people}")
     # print(f"Companies: {my_search.companies}")
     # print(f"Groups: {my_search.groups}")
     # print(f"Products: {my_search.products}")
 
-    data_to_export = my_search.posts
-    formatted_data = [dataclasses.asdict(elem) for elem in data_to_export]
-    export_data(formatted_data)
+    formatted_jobs = [dataclasses.asdict(elem) for elem in my_search.jobs]
+    formatted_posts = [dataclasses.asdict(elem) for elem in my_search.posts]
+    formatted_people = [dataclasses.asdict(elem) for elem in my_search.people]
+    formatted_companies = [dataclasses.asdict(elem) for elem in my_search.companies]
+    export_data(formatted_jobs + formatted_posts + formatted_people + formatted_companies)
 
 if __name__ == "__main__":
     main()

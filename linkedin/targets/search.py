@@ -92,7 +92,7 @@ class Search:
                 job_title_elem = card.find_element(
                     By.XPATH, ".//a[contains(@href, 'currentJobId') and not(descendant::img)]"
                 )
-                job_title = job_title_elem.text.strip()
+                job_title = job_title_elem.text.strip().replace(" \n, Verified", "")
                 job_link  = job_title_elem.get_attribute("href")
             except Exception:
                 print("Error getting job title")
@@ -117,7 +117,7 @@ class Search:
                     By.XPATH,
                     ".//div[contains(@class, 'entity-result__insights')]/div[contains(., 'ago') and not(contains(., 'alumni'))]"
                 )
-                time_posted = time_posted_elem.text.strip()
+                time_posted = time_posted_elem.text.strip().replace("\n • \nEasy Apply", "")
             except Exception:
                 print("Error getting time posted")
                 time_posted = ""
@@ -186,24 +186,96 @@ class Search:
 
 
             try:
-                name_link_wrapper = text_information_wrapper.find_elements(By.XPATH, ".//a[contains(@href, 'miniProfileUrn')]")
+                name_link_wrapper = text_information_wrapper.find_element(By.XPATH, ".//a[contains(@href, 'miniProfileUrn')]")
                 name = name_link_wrapper.find_element(By.XPATH, "./span[1]/span[1]").text.strip()
             except Exception:
+                print("Error getting name")
                 name = ""
             try:
-                profile_photo_url = profile_picture_wrapper.find_element(By.TAG_NAME, "a").get_attribute("src")
+                photo_a_element = profile_picture_wrapper.find_element(By.TAG_NAME, "a")
+
+                profile_url = photo_a_element.get_attribute("href")
+                profile_photo_url = photo_a_element.find_element(By.TAG_NAME, "img").get_attribute("src")
             except Exception:
-                profile_photo_url = ""
+                print("Error getting profile photo url")
+                profile_photo_url = "No photo found"
             try:
-                headline = text_information_wrapper.find_element(By.XPATH, "./div[1]./div[2]").text.strip()
+                headline_wrapper_element = text_information_wrapper.find_element(By.XPATH, "./div[1]")
+                headline_element = headline_wrapper_element.find_element(By.XPATH, "./div[2]")
+
+                headline = headline_element.text.strip()
             except Exception:
+                print("Error getting headline")
                 headline = ""
             try:
-                location = text_information_wrapper.find_element(By.XPATH, "./div[1]./div[3]").text.strip()
+                location = text_information_wrapper.find_element(By.XPATH, "./div[1]/div[3]").text.strip()
             except Exception:
+                print("Error getting location")
                 location = ""
-            self.add_person(Person(name, profile_photo_url, headline, location))
+            self.add_person(Person(name, profile_url, profile_photo_url, headline, location))
         return self.people
+    
+    def scrape_companies_section(self, section_id):
+        """
+        Scrapes the Companies section.
+        Returns a list of dictionaries with keys:
+        - name
+        - profile_photo_url
+        - headline
+        - location
+        """
+        container = self.wait.until(EC.presence_of_element_located((By.ID, section_id)))
+        print("Scraping companies section...")
+        company_cards = container.find_elements(
+            By.CSS_SELECTOR, 
+            "div[data-chameleon-result-urn^='urn:li:company:']"
+        )
+
+
+        for card in company_cards:
+            data_element = card.find_element(By.XPATH, "./div[1]/div[1]")
+
+            profile_picture_wrapper = data_element.find_element(By.XPATH, "./div[1]")
+            text_information_wrapper = data_element.find_element(By.XPATH, "./div[2]")
+
+
+            try:
+                name_link_wrapper = text_information_wrapper.find_element(By.XPATH, ".//a[contains(@href, 'https://www.linkedin.com/company/')]")
+                
+                company_name = name_link_wrapper.text.strip()
+            except Exception:
+                print("Error getting name")
+                company_name = ""
+            try:
+                photo_a_element = profile_picture_wrapper.find_element(By.TAG_NAME, "a")
+
+                profile_url = photo_a_element.get_attribute("href")
+                profile_photo_url = photo_a_element.find_element(By.TAG_NAME, "img").get_attribute("src")
+            except Exception:
+                print("Error getting profile photo url")
+                profile_photo_url = "No photo found"
+            try:
+                headline_wrapper_element = text_information_wrapper.find_element(By.XPATH, "./div[1]")
+                headline_element = headline_wrapper_element.find_element(By.XPATH, "./div[2]")
+
+                headline = headline_element.text.strip()
+            except Exception:
+                print("Error getting headline")
+                headline = ""
+            try:
+                follower_count = text_information_wrapper.find_element(By.XPATH, "./div[1]/div[3]").text.strip()
+            except Exception:
+                print("Error getting follower_count")
+                follower_count = ""
+            try:
+                description_wrapper = text_information_wrapper.find_element(By.XPATH, "./p")
+
+                description = description_wrapper.text.strip()
+            except Exception:
+                print("Error getting description")
+                description = ""
+            self.add_company(Company(company_name, profile_url, profile_photo_url, headline, follower_count, description))
+        return self.companies
 
             
     def search(self, search_query):
@@ -217,9 +289,7 @@ class Search:
             "Jobs": self.scrape_jobs_section,
             "Posts": self.scrape_posts_section,
             "People": self.scrape_people_section,
-            # "Companies": self.scrape_companies_section,
-            # "Groups": self.scrape_groups_section,
-            # "Products": self.scrape_products_section
+            "Companies": self.scrape_companies_section,
         }
         
         
