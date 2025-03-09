@@ -24,8 +24,6 @@ def main():
     parser.add_argument("--template", type=str, required=True, help="Path to template JSON file")
     parser.add_argument("--username", type=str, help="LinkedIn username/email")
     parser.add_argument("--password", type=str, help="LinkedIn password")
-
-
     
     args = parser.parse_args()
     
@@ -63,7 +61,6 @@ def main():
         print("Getting search")
         my_search = Search(driver)
         my_search.search(query, fields)
-
 
         formatted_jobs = [dataclasses.asdict(elem) for elem in my_search.jobs]
         formatted_posts = [dataclasses.asdict(elem) for elem in my_search.posts]
