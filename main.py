@@ -1,31 +1,3 @@
-
-# # Example template JSON file (connections_template.json):
-# """
-# {
-#     "container_selector": "li.mn-connection-card",
-#     "field_selectors": {
-#         "name": "span.mn-connection-card__name",
-#         "headline": "span.mn-connection-card__occupation",
-#         "profile_link": "a.mn-connection-card__link",
-#         "photo_link": "div.presence-entity__image"
-#     }
-# }
-# """
-
-# # Example template JSON file (search_template.json):
-# """
-# {
-#     "container_selector": "li.reusable-search__result-container",
-#     "field_selectors": {
-#         "name": ".app-aware-link span[aria-hidden='true']",
-#         "headline": ".entity-result__primary-subtitle",
-#         "company": ".entity-result__secondary-subtitle",
-#         "location": ".entity-result__secondary-subtitle ~ .entity-result__secondary-subtitle",
-#         "profile_link": ".app-aware-link"
-#     }
-# }
-# """
-
 import argparse
 import dataclasses
 import json
@@ -53,13 +25,10 @@ def main():
     parser.add_argument("--username", type=str, help="LinkedIn username/email")
     parser.add_argument("--password", type=str, help="LinkedIn password")
 
-    # Optional arguments
-    parser.add_argument("--format", type=str, choices=["json", "csv", "both"], default="both", help="Output format")
 
     
     args = parser.parse_args()
     
-    # Load template
     print("Loading template")
     try:
         template = load_template(args.template)
@@ -78,36 +47,29 @@ def main():
     print("Initializing driver")
     driver = webdriver.Chrome()
 
-    # log in
     print("Logging in")
     login(driver, args.username, args.password)
 
-    # wait for enter key
     input("Please complete any security checks and press Enter to continue...")
-    # # get connections
-    # print("Getting connections")
-    # my_network = Network(driver)
-    # connections: list[Connection] = my_network.find_connections(fields, limit)
-    # export_data(connections)
+    if page == "connections":
+        # get connections
+        print("Getting connections")
+        my_network = Network(driver)
+        connections: list[Connection] = my_network.find_connections(fields, limit)
+        formatted_connections = [dataclasses.asdict(elem) for elem in connections]
+        export_data(formatted_connections)
 
-    # get search
-    print("Getting search")
-    my_search = Search(driver)
-    my_search.search(query)
+    elif page == "search":
+        print("Getting search")
+        my_search = Search(driver)
+        my_search.search(query, fields)
 
-    # print(f"Fields: {my_search.fields}")
-    # print(f"Jobs: {my_search.jobs}")
-    # print(f"Posts: {my_search.posts}")
-    # print(f"People: {my_search.people}")
-    # print(f"Companies: {my_search.companies}")
-    # print(f"Groups: {my_search.groups}")
-    # print(f"Products: {my_search.products}")
 
-    formatted_jobs = [dataclasses.asdict(elem) for elem in my_search.jobs]
-    formatted_posts = [dataclasses.asdict(elem) for elem in my_search.posts]
-    formatted_people = [dataclasses.asdict(elem) for elem in my_search.people]
-    formatted_companies = [dataclasses.asdict(elem) for elem in my_search.companies]
-    export_data(formatted_jobs + formatted_posts + formatted_people + formatted_companies)
+        formatted_jobs = [dataclasses.asdict(elem) for elem in my_search.jobs]
+        formatted_posts = [dataclasses.asdict(elem) for elem in my_search.posts]
+        formatted_people = [dataclasses.asdict(elem) for elem in my_search.people]
+        formatted_companies = [dataclasses.asdict(elem) for elem in my_search.companies]
+        export_data(formatted_jobs + formatted_posts + formatted_people + formatted_companies)
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 {
   "page": "search",
   "query": "ai engineer",
-  "fields": ["Jobs"],
+  "fields": ["Jobs", "Companies"],
   "limit": 1
 }

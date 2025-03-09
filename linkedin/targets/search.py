@@ -77,10 +77,8 @@ class Search:
         - time_posted
         """
 
-        # Wait until the section container loads by its stable ID.
         container = self.wait.until(EC.presence_of_element_located((By.ID, section_id)))
         
-        # Use the data attribute to identify job cards:
         job_cards = container.find_elements(
             By.XPATH,
             ".//div[contains(@data-chameleon-result-urn, 'urn:li:job:') and contains(@data-view-name, 'search-entity-result-universal-template')]"
@@ -88,7 +86,6 @@ class Search:
         
         for card in job_cards:
             try:
-                # Instead of using a class like 't-16', look for the first <a> element whose href contains 'currentJobId'
                 job_title_elem = card.find_element(
                     By.XPATH, ".//a[contains(@href, 'currentJobId') and not(descendant::img)]"
                 )
@@ -112,7 +109,6 @@ class Search:
 
 
             try:
-                # Look for an element that contains the text 'ago', which should be part of the time info.
                 time_posted_elem = card.find_element(
                     By.XPATH,
                     ".//div[contains(@class, 'entity-result__insights')]/div[contains(., 'ago') and not(contains(., 'alumni'))]"
@@ -278,7 +274,7 @@ class Search:
         return self.companies
 
             
-    def search(self, search_query):
+    def search(self, search_query, fields):
         _ = self.execute_search(search_query)
 
         # Scrape the sidebar to see what sections are present.
@@ -295,17 +291,16 @@ class Search:
         
         # Iterate through each field found in the sidebar.
         for field, section_id in sidebar_fields.items():
-            if field in scrape_function_map:
+            if field in scrape_function_map and field in fields:
                 try:
-                    # Click the sidebar button for this section.
                     button = self.driver.find_element(By.CSS_SELECTOR, f"button[data-target-section-id='{section_id}']")
                     button.click()
-                    # Wait for the main section to load (by waiting for an element with the section's ID).
+                    
                     self.wait.until(EC.presence_of_element_located((By.ID, section_id)))
-                    # Optionally scroll the section into view.
+
                     section = self.driver.find_element(By.ID, section_id)
                     self.driver.execute_script("arguments[0].scrollIntoView(true);", section)
-                    # Call the appropriate scraping function.
+
                     print(f"Scraping {field} section...")
                     _ = scrape_function_map[field](section_id)
                 except Exception as e:
