@@ -1,6 +1,6 @@
 # Instructions
 
-Install [poetry]([url](https://python-poetry.org/docs/))
+Install [poetry](https://python-poetry.org/docs/)
 
 Install project dependencies using poetry `poetry install`
 
